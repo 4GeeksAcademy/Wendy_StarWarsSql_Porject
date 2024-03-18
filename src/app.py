@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User , People, Planet, UserFavorite
 #from models import Person
 
 app = Flask(__name__)
@@ -36,14 +36,63 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+
+
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def add_user():
+     
+    user= User.query.all()
+    all_user = list(map(lambda x: x.serialize(), user))
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    return jsonify(all_user), 200
 
-    return jsonify(response_body), 200
+@app.route('/people', methods=['GET'])
+def get_all_people():
+    
+    people = People.query.all()
+    all_people = list(map(lambda x: x.serialize(), people))
+    return jsonify(all_people), 200
+
+@app.route('/planet', methods=['GET'])
+def get_all_planet():
+    
+    planet = Planet.query.all()
+    all_planet = list(map(lambda x: x.serialize(), planet))
+    return jsonify(all_planet), 200
+
+
+@app.route('/people/<int:id>', methods=['GET'])
+def get_singlechar(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    person= People.query.get(id)
+    test= person.serialize()
+
+    return jsonify(test),200
+   
+
+@app.route('/user/<int:id>', methods=['GET'])
+def get_singleUser(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    user= User.query.get(id)
+    test= user.serialize()
+
+    return jsonify(test),200
+   
+   
+@app.route('/planet/<int:id>', methods=['GET'])
+def get_singlePlanet(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    planet= Planet.query.get(id)
+    test= planet.serialize()
+
+    return jsonify(test),200
+   
+
+
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
