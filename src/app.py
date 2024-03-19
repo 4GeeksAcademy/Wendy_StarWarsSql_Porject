@@ -92,6 +92,34 @@ def get_singlePlanet(id):
    
 
 
+@app.route('/user/<id>/favorite', methods=['GET'])
+def get_favofuser(id):
+
+    fav= UserFavorite.query.filter_by(people_id =id)
+    test2 = list(map(lambda x: x.serialize(), fav))
+
+    return jsonify(test2),200
+   
+
+@app.route( '/favorite/planet/<int:planet_id>', methods=['GET'])
+def delete_user(id):
+
+    dele= UserFavorite.query.filter_by(people_id =id)
+    test2 = list(map(lambda x: x.serialize(), dele))
+
+    return jsonify(test2),200
+   
+@app.route('/', methods=['POST'])
+def add_planet():
+     
+        request_body=request.json
+
+        #members = jackson_family.add_member(request_body)
+        return jsonify(f"sucess"), 200
+     
+
+
+
 
 
 # this only runs if `$ python src/app.py` is executed
