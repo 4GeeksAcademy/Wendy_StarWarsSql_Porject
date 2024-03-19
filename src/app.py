@@ -101,45 +101,44 @@ def get_favofuser(id):
     return jsonify(test2),200
    
 
-@app.route( '/favorite/planet/<int:planet_id>', methods=['GET'])
-def delete_user(id):
-
-    dele= UserFavorite.query.filter_by(people_id =id)
-    test2 = list(map(lambda x: x.serialize(), dele))
-
-    return jsonify(test2),200
-   
-
-# @app.route('/favorite', methods=['POST'])
-# def add_favorite():
-     
-#         request_body=request.json
-#         newfav = UserFavorite (user_id= request_body['user_id'], planets_id =request_body['planets_id'], people_id=request_body['people_id'])
-#         db.session.add(newfav)
-#         db.session.commit()
-#         return jsonify(f"Success"), 200
-
 
 
 @app.route('/user', methods=['POST'])
 def add_newuser():
-     
         request_body=request.json
         
-        newU=User(email=request_body['email'],password= request_body['paassword'] )
-        db.session.add(newU)
-        db.session.commit()
-        return jsonify(f"Success"), 200
+        test_user= User.query.filter_by(email=request_body['email']).first()
+    
+        if(test_user):
+             return jsonify(f"User already exists"), 500
         
-        # if(test):
-        #   return "Already exist" 
-        # else:
-        #     #  newU=User(email=request_body['email'])
-        #     #  db.session.add(newU)
-        #     #  db.session.commit()
-        #      return jsonify(f"Success"), 200
-             
+        else:
+             newU=User(email=request_body['email'],password= request_body['password'] )
+             db.session.add(newU)
+             db.session.commit()
+             return jsonify(f"Success"), 200
+        
 
+
+@app.route('/user/login', methods=['POST'])
+def login_test():
+        request_body=request.json
+        
+        test_user= User.query.filter_by(email=request_body[0]).first()
+        if(test_user):
+             if test_user['password']==request_body[1]:
+                  return('it works')
+                       
+        else:
+             return ('nope')
+       
+        # if test_user and request_body[1]==test_user['password'] :
+             
+        #      return jsonify(test_user["id"]), 200
+        
+        # else:
+        #      return jsonify("Incorrect email/password"), 500
+            
 
 
 @app.route('/favorite', methods=['POST'])
@@ -161,7 +160,7 @@ def add_favorite2():
             return jsonify(f"Success"), 200
         else:
 
-               return  "doesnt exist", 200
+            return  "either the email or the name or the planet doesnt exist", 200
      
 
 @app.route('/favorite/<id>', methods=['DELETE'])
@@ -173,6 +172,18 @@ def delete_fav(id):
         return jsonify(f"Success"), 200
 
 
+
+
+
+
+# @app.route('/favorite', methods=['POST'])
+# def add_favorite():
+     
+#         request_body=request.json
+#         newfav = UserFavorite (user_id= request_body['user_id'], planets_id =request_body['planets_id'], people_id=request_body['people_id'])
+#         db.session.add(newfav)
+#         db.session.commit()
+#         return jsonify(f"Success"), 200
 
 
 
