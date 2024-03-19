@@ -81,6 +81,5 @@ class UserFavorite(db.Model):
             "planets_id": self.planets_id,
             "people_id": self.people_id
              
-            # do not serialize the password, its a security breach
         }
     

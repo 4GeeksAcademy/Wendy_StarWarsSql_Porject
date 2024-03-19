@@ -62,7 +62,7 @@ def get_all_planet():
 
 
 @app.route('/people/<int:id>', methods=['GET'])
-def get_singlechar(id):
+def get_singleperson(id):
 
     # this is how you can use the Family datastructure by calling its methods
     person= People.query.get(id)
@@ -109,14 +109,68 @@ def delete_user(id):
 
     return jsonify(test2),200
    
-@app.route('/', methods=['POST'])
-def add_planet():
+
+# @app.route('/favorite', methods=['POST'])
+# def add_favorite():
+     
+#         request_body=request.json
+#         newfav = UserFavorite (user_id= request_body['user_id'], planets_id =request_body['planets_id'], people_id=request_body['people_id'])
+#         db.session.add(newfav)
+#         db.session.commit()
+#         return jsonify(f"Success"), 200
+
+
+
+@app.route('/user', methods=['POST'])
+def add_newuser():
      
         request_body=request.json
+        
+        newU=User(email=request_body['email'],password= request_body['paassword'] )
+        db.session.add(newU)
+        db.session.commit()
+        return jsonify(f"Success"), 200
+        
+        # if(test):
+        #   return "Already exist" 
+        # else:
+        #     #  newU=User(email=request_body['email'])
+        #     #  db.session.add(newU)
+        #     #  db.session.commit()
+        #      return jsonify(f"Success"), 200
+             
 
-        #members = jackson_family.add_member(request_body)
-        return jsonify(f"sucess"), 200
+
+
+@app.route('/favorite', methods=['POST'])
+def add_favorite2():
+      
+        request_body=request.json
+        test_user= User.query.filter_by(email=request_body['email'])
+        test_people= People.query.filter_by(name=request_body['person'])
+        test_planet= Planet.query.filter_by(name= request_body['planet'])
+
+        test = list(map(lambda x: x.serialize(), test_user))
+        test2 = list(map(lambda x: x.serialize(), test_people))
+        test3 = list(map(lambda x: x.serialize(), test_planet))       
+        
+        if(test and test2 and test3):
+            newfav = UserFavorite (user_id= test_user['id'], planets_id =test_planet['id'], people_id= test_people['id'])
+            db.session.add(newfav)
+            db.session.commit() 
+            return jsonify(f"Success"), 200
+        else:
+
+               return  "doesnt exist", 200
      
+
+@app.route('/favorite/<id>', methods=['DELETE'])
+def delete_fav(id):
+     
+        p= UserFavorite.query.get(id)
+        db.session.delete(p)
+        db.session.commit()
+        return jsonify(f"Success"), 200
 
 
 
