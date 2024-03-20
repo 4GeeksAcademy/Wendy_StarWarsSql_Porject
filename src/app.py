@@ -125,20 +125,19 @@ def login_test():
         request_body=request.json
         
         test_user= User.query.filter_by(email=request_body[0]).first()
+       
         if(test_user):
-             if test_user['password']==request_body[1]:
-                  return('it works')
+            test_password= User.query.filter_by(email=request_body[0]).first().password
+            if str(test_password)==request_body[1]:                
+               return "it works"
+            else:
+                 return "incorrect user/or password"
+                 
                        
         else:
              return ('nope')
        
-        # if test_user and request_body[1]==test_user['password'] :
-             
-        #      return jsonify(test_user["id"]), 200
         
-        # else:
-        #      return jsonify("Incorrect email/password"), 500
-            
 
 
 @app.route('/favorite', methods=['POST'])
@@ -173,17 +172,6 @@ def delete_fav(id):
 
 
 
-
-
-
-# @app.route('/favorite', methods=['POST'])
-# def add_favorite():
-     
-#         request_body=request.json
-#         newfav = UserFavorite (user_id= request_body['user_id'], planets_id =request_body['planets_id'], people_id=request_body['people_id'])
-#         db.session.add(newfav)
-#         db.session.commit()
-#         return jsonify(f"Success"), 200
 
 
 
