@@ -124,18 +124,21 @@ def add_newuser():
 def login_test():
         request_body=request.json
         
-        test_user= User.query.filter_by(email=request_body[0]).first()
-       
+        test_user= User.query.filter_by(email=request_body[0]).first().id
+        
         if(test_user):
             test_password= User.query.filter_by(email=request_body[0]).first().password
-            if str(test_password)==request_body[1]:                
-               return "it works"
+           # test_name= User.query.filter_by(email=request_body[0]).first().name
+       
+            if str(test_password)==request_body[1]:  
+               #final=[test_user,str(test_name)]              
+               return test_user
             else:
-                 return "incorrect user/or password"
+                 return jsonify(f"Incorrect email or password"), 400
                  
                        
         else:
-             return ('nope')
+              return jsonify(f"Incorrect email or password"), 400
        
         
 
