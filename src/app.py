@@ -60,6 +60,16 @@ def get_all_planet():
     all_planet = list(map(lambda x: x.serialize(), planet))
     return jsonify(all_planet), 200
 
+    
+@app.route('/favorite', methods=['GET'])
+def get_all_favorite():
+    
+    fav = UserFavorite.query.all()
+    all_fav = list(map(lambda x: x.serialize(), fav))
+    return jsonify(all_fav), 200
+
+
+
 
 @app.route('/people/<int:id>', methods=['GET'])
 def get_singleperson(id):
@@ -95,10 +105,20 @@ def get_singlePlanet(id):
 @app.route('/user/<id>/favorite', methods=['GET'])
 def get_favofuser(id):
 
-    fav= UserFavorite.query.filter_by(people_id =id)
+    fav= UserFavorite.query.filter_by(user_id =id)
     test2 = list(map(lambda x: x.serialize(), fav))
+   
+    return  jsonify(test2)
+    # if fav :
+    #       #test2 = list(map(lambda x: x.serialize(), fav))
+    #       final=fav
+    #       return jsonify(final),200
+    # else:
+    #      return "something happened",400
+         
+               
 
-    return jsonify(test2),200
+    
    
 
 
@@ -128,13 +148,16 @@ def login_test():
         
         if(test_user):
             test_password= User.query.filter_by(email=request_body[0]).first().password
-           # test_name= User.query.filter_by(email=request_body[0]).first().name
-       
+            test_name= User.query.filter_by(email=request_body[0]).first().name
+           
             if str(test_password)==request_body[1]:  
-               #final=[test_user,str(test_name)]              
-               return test_user
+                test= {
+                     "user": test_name,
+                     "id": test_user
+                      }         
+                return jsonify(test)
             else:
-                 return jsonify(f"Incorrect email or password"), 400
+                return jsonify(f"Incorrect email or password"), 400
                  
                        
         else:
@@ -149,14 +172,14 @@ def add_favorite2():
         request_body=request.json
         test_user= User.query.filter_by(email=request_body['email'])
         test_people= People.query.filter_by(name=request_body['person'])
-        test_planet= Planet.query.filter_by(name= request_body['planet'])
+        #test_planet= Planet.query.filter_by(name= request_body['planet'])
 
         test = list(map(lambda x: x.serialize(), test_user))
         test2 = list(map(lambda x: x.serialize(), test_people))
-        test3 = list(map(lambda x: x.serialize(), test_planet))       
+       # test3 = list(map(lambda x: x.serialize(), test_planet))       
         
-        if(test and test2 and test3):
-            newfav = UserFavorite (user_id= test_user['id'], planets_id =test_planet['id'], people_id= test_people['id'])
+        if(test and test2 ):
+            newfav = UserFavorite (user_id= test_user['id'], people_id= test_people['id'])
             db.session.add(newfav)
             db.session.commit() 
             return jsonify(f"Success"), 200
