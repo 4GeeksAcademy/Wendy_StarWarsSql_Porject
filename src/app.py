@@ -69,8 +69,6 @@ def get_all_favorite():
     return jsonify(all_fav), 200
 
 
-
-
 @app.route('/people/<int:id>', methods=['GET'])
 def get_singleperson(id):
 
@@ -100,27 +98,6 @@ def get_singlePlanet(id):
 
     return jsonify(test),200
    
-
-
-@app.route('/user/<id>/favorite', methods=['GET'])
-def get_favofuser(id):
-
-    fav= UserFavorite.query.filter_by(user_id =id)
-    test2 = list(map(lambda x: x.serialize(), fav))
-   
-    return  jsonify(test2)
-    # if fav :
-    #       #test2 = list(map(lambda x: x.serialize(), fav))
-    #       final=fav
-    #       return jsonify(final),200
-    # else:
-    #      return "something happened",400
-         
-               
-
-    
-   
-
 
 
 @app.route('/user', methods=['POST'])
@@ -164,6 +141,17 @@ def login_test():
               return jsonify(f"Incorrect email or password"), 400
        
         
+@app.route('/user/<id>/favorite', methods=['GET'])
+def get_favofuser(id):
+
+    fav= UserFavorite.query.filter_by(user_id = id)
+    test2 = list(map(lambda x: x.serialize(), fav))
+   
+    return  jsonify(test2)
+         
+
+    
+
 
 
 @app.route('/favorite', methods=['POST'])
@@ -188,10 +176,11 @@ def add_favorite2():
             return  "either the email or the name or the planet doesnt exist", 200
      
 
-@app.route('/favorite/<id>', methods=['DELETE'])
-def delete_fav(id):
+@app.route('/user/<id>favorite/<id2>', methods=['DELETE'])
+def delete_fav(id,id2):
      
-        p= UserFavorite.query.get(id)
+        p= UserFavorite.query.filter(user_id=id, people_id=id2 ).first()
+
         db.session.delete(p)
         db.session.commit()
         return jsonify(f"Success"), 200
