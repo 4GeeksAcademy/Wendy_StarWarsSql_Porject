@@ -37,6 +37,64 @@ def sitemap():
     return generate_sitemap(app)
 
 
+
+@app.route('/people', methods=['GET'])
+def get_all_people():
+    
+    people = People.query.all()
+    all_people = list(map(lambda x: x.serialize(), people))
+    return jsonify(all_people), 200
+
+@app.route('/planet', methods=['GET'])
+def get_all_planet():
+    
+    planet = Planet.query.all()
+    all_planet = list(map(lambda x: x.serialize(), planet))
+    return jsonify(all_planet), 200
+
+    
+@app.route('/favorite', methods=['GET'])
+def get_all_favorite():
+    
+    fav = UserFavorite.query.all()
+    all_fav = list(map(lambda x: x.serialize(), fav))
+    return jsonify(all_fav), 200
+
+
+@app.route('/people/<int:id>', methods=['GET'])
+def get_singleperson(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    person= People.query.get(id)
+    test= person.serialize()
+
+    return jsonify(test),200
+   
+
+@app.route('/user/<int:id>', methods=['GET'])
+def get_singleUser(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    user= User.query.get(id)
+    test= user.serialize()
+
+    return jsonify(test),200
+   
+   
+@app.route('/planet/<int:id>', methods=['GET'])
+def get_singlePlanet(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    planet= Planet.query.get(id)
+    test= planet.serialize()
+
+    return jsonify(test),200
+   
+
+
+
+
+
 @app.route('/user', methods=['GET'])
 def add_user():
      
@@ -97,38 +155,33 @@ def get_favofuser(id):
          
 
 
-@app.route('/favorite', methods=['POST'])
-def add_favorite2():
+@app.route('/user/<id>/favorite/<idf>/t', methods=['POST'])
+def add_favorite2(id,idf):
       
         request_body=request.json
-        test_user= User.query.filter_by(email=request_body['email'])
-        test_people= People.query.filter_by(name=request_body['person'])
-        #test_planet= Planet.query.filter_by(name= request_body['planet'])
-
-        test = list(map(lambda x: x.serialize(), test_user))
-        test2 = list(map(lambda x: x.serialize(), test_people))
-       # test3 = list(map(lambda x: x.serialize(), test_planet))       
+        newfav = UserFavorite (user_id=id, people_id= idf)
+        db.session.add(newfav)
+        db.session.commit() 
+        return jsonify(f"Success"), 200
         
-        if(test and test2 ):
-            newfav = UserFavorite (user_id= test_user['id'], people_id= test_people['id'])
-            db.session.add(newfav)
-            db.session.commit() 
-            return jsonify(f"Success"), 200
-        else:
-
-            return  "either the email or the name or the planet doesnt exist", 200
      
 
-@app.route('/user/<id>favorite/<id2>', methods=['PUT'])
-def delete_fav(id,id2):
-        request_body=request.json
-        p= UserFavorite.query.filter(user_id=request_body[0], people_id=request_body[1]).first()
-        db.session.delete(p)
+
+@app.route('/user/<id>/favorite/<idf>', methods=['DELETE'])
+def delete_fav(id, idf):
+        test= UserFavorite.query.filter_by(user_id=id, people_id=idf).first()
+        db.session.delete(test)
         db.session.commit()
         return jsonify(f"Success"), 200
+        #return jsonify(test)
 
-
-
+@app.route('/user/<id>/favorite/<idf>/h', methods=['DELETE'])
+def delete_fav2(id,idf):
+        test= UserFavorite.query.filter_by(user_id=id, people_id=idf).first()
+        db.session.delete(test)
+        db.session.commit()
+        return jsonify(f"Success"), 200
+        
 
 
 
@@ -137,56 +190,3 @@ if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
 
-
-# @app.route('/people', methods=['GET'])
-# def get_all_people():
-    
-#     people = People.query.all()
-#     all_people = list(map(lambda x: x.serialize(), people))
-#     return jsonify(all_people), 200
-
-# @app.route('/planet', methods=['GET'])
-# def get_all_planet():
-    
-#     planet = Planet.query.all()
-#     all_planet = list(map(lambda x: x.serialize(), planet))
-#     return jsonify(all_planet), 200
-
-    
-# @app.route('/favorite', methods=['GET'])
-# def get_all_favorite():
-    
-#     fav = UserFavorite.query.all()
-#     all_fav = list(map(lambda x: x.serialize(), fav))
-#     return jsonify(all_fav), 200
-
-
-# @app.route('/people/<int:id>', methods=['GET'])
-# def get_singleperson(id):
-
-#     # this is how you can use the Family datastructure by calling its methods
-#     person= People.query.get(id)
-#     test= person.serialize()
-
-#     return jsonify(test),200
-   
-
-# @app.route('/user/<int:id>', methods=['GET'])
-# def get_singleUser(id):
-
-#     # this is how you can use the Family datastructure by calling its methods
-#     user= User.query.get(id)
-#     test= user.serialize()
-
-#     return jsonify(test),200
-   
-   
-# @app.route('/planet/<int:id>', methods=['GET'])
-# def get_singlePlanet(id):
-
-#     # this is how you can use the Family datastructure by calling its methods
-#     planet= Planet.query.get(id)
-#     test= planet.serialize()
-
-#     return jsonify(test),200
-   
