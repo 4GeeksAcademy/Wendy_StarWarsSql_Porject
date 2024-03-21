@@ -104,21 +104,20 @@ def add_user():
     return jsonify(all_user), 200
 
 
-@app.route('/user', methods=['POST'])
+@app.route('/user/new', methods=['POST'])
 def add_newuser():
         request_body=request.json
         
-        test_user= User.query.filter_by(email=request_body['email']).first()
+        test_user= User.query.filter_by(email=request_body[1]).first()
     
         if(test_user):
              return jsonify(f"User already exists"), 500
         
         else:
-             newU=User(email=request_body['email'],password= request_body['password'] )
+             newU=User ( name=request_body[0], email=request_body[1],password= request_body[2] )
              db.session.add(newU)
              db.session.commit()
              return jsonify(f"Success"), 200
-        
 
 
 @app.route('/user/login', methods=['POST'])
